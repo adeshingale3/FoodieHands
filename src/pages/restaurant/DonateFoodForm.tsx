@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Trash, Plus } from 'lucide-react';
-import { getFirestore, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, onSnapshot, addDoc, Timestamp } from 'firebase/firestore';
 import { User } from '@/types';
 
 const DonateFoodForm: React.FC = () => {
@@ -126,15 +126,59 @@ const DonateFoodForm: React.FC = () => {
     
     try {
       setIsLoading(true);
+      const db = getFirestore();
       
-      // In a real app, this would call your API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Get selected NGO data
+      const selectedNGOData = ngos.find(ngo => ngo.id === selectedNGO);
+      if (!selectedNGOData) {
+        throw new Error('Selected NGO not found');
+      }
+
+      // Create food donation document
+      const foodDonationData = {
+        restaurantId: user?.id,
+        restaurantName: user?.name,
+        ngoId: selectedNGO,
+        ngoName: selectedNGOData.name,
+        foodItems: foodItems.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          unit: item.unit
+        })),
+        totalValue: totalValue,
+        status: 'pending',
+        createdAt: Timestamp.now(),
+        expiryDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
+        pickupAddress: user?.address || '',
+        contactNumber: user?.phone || ''
+      };
+
+      // Add food donation to Firestore
+      const foodDonationRef = await addDoc(collection(db, 'foodDonations'), foodDonationData);
+
+      // Create notification for NGO
+      await addDoc(collection(db, 'notifications'), {
+        userId: selectedNGO,
+        title: 'New Food Donation Available',
+        message: `${user?.name} has food to donate. Total value: $${totalValue}`,
+        type: 'food_donation',
+        read: false,
+        donationId: foodDonationRef.id,
+        createdAt: Timestamp.now(),
+        foodDetails: {
+          items: foodItems.map(item => `${item.name} (${item.quantity} ${item.unit})`).join(', '),
+          totalValue,
+          expiryDate: foodDonationData.expiryDate,
+          pickupAddress: foodDonationData.pickupAddress,
+          contactNumber: foodDonationData.contactNumber
+        }
+      });
       
-      toast.success('Donation request sent successfully!');
+      toast.success('Food donation request sent successfully!');
       navigate('/restaurant/history');
     } catch (error) {
-      toast.error('Failed to submit donation. Please try again.');
-      console.error(error);
+      console.error('Error submitting food donation:', error);
+      toast.error('Failed to submit food donation request');
     } finally {
       setIsLoading(false);
     }
