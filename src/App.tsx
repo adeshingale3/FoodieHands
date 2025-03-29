@@ -25,6 +25,9 @@ import Analytics from '@/pages/ngo/Analytics';
 
 // Admin Pages
 import AdminDashboard from "@/pages/admin/Dashboard";
+import Restaurants from '@/pages/admin/Restaurants';
+import NGOs from '@/pages/admin/NGOs';
+import Donations from '@/pages/admin/Donations';
 
 // Error Page
 import NotFound from "@/pages/NotFound";
@@ -65,6 +68,9 @@ const App = () => (
               {/* Admin Routes */}
               <Route element={<AppLayout allowedRoles={['admin']} />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/restaurants" element={<Restaurants />} />
+                <Route path="/admin/ngos" element={<NGOs />} />
+                <Route path="/admin/donations" element={<Donations />} />
                 {/* Add other admin routes */}
               </Route>
               

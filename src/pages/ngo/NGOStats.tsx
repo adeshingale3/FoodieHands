@@ -30,7 +30,7 @@ const NGOStats: React.FC = () => {
           totalReceivedFood: data.totalReceivedFood || 0,
           totalValue: data.totalValue || 0,
           totalPoints: data.totalPoints || 0,
-          pendingDonations: data.pendingDonations || 0,
+          pendingDonations: 0,
           lastUpdated: data.lastUpdated?.toDate() || new Date()
         });
       } else {

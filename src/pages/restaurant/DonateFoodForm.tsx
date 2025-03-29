@@ -239,6 +239,27 @@ const DonateFoodForm: React.FC = () => {
       console.log('Attempting to save notification:', notificationData);
       await addDoc(collection(db, 'notifications'), notificationData);
       console.log('Notification saved successfully');
+
+      // Update NGO stats to increment pending donations
+      const ngoStatsRef = doc(db, 'ngoStats', selectedNGO);
+      const ngoStatsDoc = await getDoc(ngoStatsRef);
+
+      if (ngoStatsDoc.exists()) {
+        // Update existing stats
+        await setDoc(ngoStatsRef, {
+          pendingDonations: increment(1),
+          lastUpdated: Timestamp.now()
+        }, { merge: true });
+      } else {
+        // Create new stats document
+        await setDoc(ngoStatsRef, {
+          pendingDonations: 1,
+          totalReceivedFood: 0,
+          totalValue: 0,
+          totalPoints: 0,
+          lastUpdated: Timestamp.now()
+        });
+      }
       
       toast.success('Food donation request sent successfully!');
       navigate('/restaurant/dashboard');

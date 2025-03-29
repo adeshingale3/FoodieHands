@@ -17,22 +17,37 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ngo';
     }
 
+    function isAdmin() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     // Users collection
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow write: if request.auth.uid == userId;
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if request.auth.uid == userId || isAdmin();
+      allow delete: if isAdmin();
     }
 
     // Donations collection
     match /donations/{donationId} {
       allow read: if isAuthenticated() && (
         resource.data.restaurantId == request.auth.uid ||
-        resource.data.ngoId == request.auth.uid
+        resource.data.ngoId == request.auth.uid ||
+        isAdmin()
       );
-      allow create: if isRestaurant();
+      allow create: if isRestaurant() || isAdmin();
       allow update: if isAuthenticated() && (
         resource.data.restaurantId == request.auth.uid ||
-        resource.data.ngoId == request.auth.uid
+        resource.data.ngoId == request.auth.uid ||
+        isAdmin()
+      );
+      allow list: if isAuthenticated() && (
+        isAdmin() ||
+        (request.query.filters[0].op == '==' &&
+        request.query.filters[0].field == 'restaurantId' &&
+        request.query.filters[0].value == request.auth.uid)
       );
     }
 
@@ -40,19 +55,25 @@ service cloud.firestore {
     match /fooddetails/{foodId} {
       allow read: if isAuthenticated() && (
         resource.data.restaurantId == request.auth.uid ||
-        resource.data.ngoId == request.auth.uid
+        resource.data.ngoId == request.auth.uid ||
+        isAdmin()
       );
-      allow create: if isRestaurant() && 
+      allow create: if (isRestaurant() || isAdmin()) && 
         request.resource.data.restaurantId == request.auth.uid &&
-        request.resource.data.status == 'pending';
+        request.resource.data.status == 'pending' &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.expiryDate is string &&
+        request.resource.data.pickupAddress is string;
       allow update: if isAuthenticated() && (
         resource.data.restaurantId == request.auth.uid ||
-        resource.data.ngoId == request.auth.uid
+        resource.data.ngoId == request.auth.uid ||
+        isAdmin()
       );
       allow list: if isAuthenticated() && (
-        request.query.filters[0].op == '==' &&
+        isAdmin() ||
+        (request.query.filters[0].op == '==' &&
         request.query.filters[0].field == 'restaurantId' &&
-        request.query.filters[0].value == request.auth.uid
+        request.query.filters[0].value == request.auth.uid)
       );
     }
 
@@ -61,31 +82,35 @@ service cloud.firestore {
       allow read: if isAuthenticated() && (
         resource.data.userId == request.auth.uid ||
         resource.data.ngoId == request.auth.uid ||
-        resource.data.restaurantId == request.auth.uid
+        resource.data.restaurantId == request.auth.uid ||
+        isAdmin()
       );
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+        (request.resource.data.userId != request.auth.uid || isAdmin());
       allow update: if isAuthenticated() && (
         resource.data.userId == request.auth.uid ||
         resource.data.ngoId == request.auth.uid ||
-        resource.data.restaurantId == request.auth.uid
+        resource.data.restaurantId == request.auth.uid ||
+        isAdmin()
       );
       allow list: if isAuthenticated() && (
-        request.query.filters[0].op == '==' &&
+        isAdmin() ||
+        (request.query.filters[0].op == '==' &&
         request.query.filters[0].field == 'userId' &&
-        request.query.filters[0].value == request.auth.uid
+        request.query.filters[0].value == request.auth.uid)
       );
     }
 
     // Restaurant Stats collection
     match /restaurantStats/{restaurantId} {
-      allow read: if isAuthenticated() && request.auth.uid == restaurantId;
-      allow create, update: if isRestaurant() && request.auth.uid == restaurantId;
+      allow read: if isAuthenticated() && (request.auth.uid == restaurantId || isAdmin());
+      allow create, update: if (isRestaurant() && request.auth.uid == restaurantId) || isAdmin();
     }
 
     // NGO Stats collection
     match /ngoStats/{ngoId} {
-      allow read: if isAuthenticated() && request.auth.uid == ngoId;
-      allow create, update: if isNGO() && request.auth.uid == ngoId;
+      allow read: if isAuthenticated() && (request.auth.uid == ngoId || isAdmin());
+      allow create, update: if (isNGO() && request.auth.uid == ngoId) || isAdmin();
     }
   }
 } 
