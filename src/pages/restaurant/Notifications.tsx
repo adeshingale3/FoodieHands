@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { collection, query, where, getDocs, onSnapshot, updateDoc, doc, Timestamp, getDoc, addDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot, updateDoc, doc, Timestamp } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,7 +24,7 @@ interface Notification {
   };
 }
 
-const Notifications: React.FC = () => {
+const RestaurantNotifications = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,87 +74,14 @@ const Notifications: React.FC = () => {
     fetchNotifications();
   }, [user?.id]);
 
-  const handleAccept = async (notification: Notification) => {
+  const handleMarkAsRead = async (notification: Notification) => {
     try {
-      // Get the food donation details to get restaurant ID
-      const foodDonationDoc = await getDoc(doc(db, 'fooddetails', notification.donationId));
-      if (!foodDonationDoc.exists()) {
-        throw new Error('Food donation not found');
-      }
-
-      const foodDonationData = foodDonationDoc.data();
-      const restaurantId = foodDonationData.restaurantId;
-
-      // Update notification status
       await updateDoc(doc(db, 'notifications', notification.id), {
-        read: true,
-        status: 'accepted'
+        read: true
       });
-
-      // Update food donation status
-      await updateDoc(doc(db, 'fooddetails', notification.donationId), {
-        status: 'accepted',
-        acceptedAt: Timestamp.now()
-      });
-
-      // Create notification for restaurant
-      await addDoc(collection(db, 'notifications'), {
-        userId: restaurantId,
-        title: 'Food Donation Accepted',
-        message: `${user?.name} has accepted your food donation request`,
-        type: 'donation_accepted',
-        read: false,
-        donationId: notification.donationId,
-        createdAt: Timestamp.now(),
-        foodDetails: notification.foodDetails
-      });
-
-      toast.success('Food donation accepted successfully');
     } catch (error) {
-      console.error('Error accepting donation:', error);
-      toast.error('Failed to accept donation');
-    }
-  };
-
-  const handleReject = async (notification: Notification) => {
-    try {
-      // Get the food donation details to get restaurant ID
-      const foodDonationDoc = await getDoc(doc(db, 'fooddetails', notification.donationId));
-      if (!foodDonationDoc.exists()) {
-        throw new Error('Food donation not found');
-      }
-
-      const foodDonationData = foodDonationDoc.data();
-      const restaurantId = foodDonationData.restaurantId;
-
-      // Update notification status
-      await updateDoc(doc(db, 'notifications', notification.id), {
-        read: true,
-        status: 'rejected'
-      });
-
-      // Update food donation status
-      await updateDoc(doc(db, 'fooddetails', notification.donationId), {
-        status: 'rejected',
-        rejectedAt: Timestamp.now()
-      });
-
-      // Create notification for restaurant
-      await addDoc(collection(db, 'notifications'), {
-        userId: restaurantId,
-        title: 'Food Donation Rejected',
-        message: `${user?.name} has rejected your food donation request`,
-        type: 'donation_rejected',
-        read: false,
-        donationId: notification.donationId,
-        createdAt: Timestamp.now(),
-        foodDetails: notification.foodDetails
-      });
-
-      toast.success('Food donation rejected');
-    } catch (error) {
-      console.error('Error rejecting donation:', error);
-      toast.error('Failed to reject donation');
+      console.error('Error marking notification as read:', error);
+      toast.error('Failed to mark notification as read');
     }
   };
 
@@ -202,15 +129,10 @@ const Notifications: React.FC = () => {
                   <p>Pickup Address: {notification.foodDetails.pickupAddress}</p>
                 </div>
 
-                {!notification.read && notification.type === 'food_donation' && (
-                  <div className="flex gap-2">
-                    <Button onClick={() => handleAccept(notification)}>
-                      Accept
-                    </Button>
-                    <Button variant="destructive" onClick={() => handleReject(notification)}>
-                      Reject
-                    </Button>
-                  </div>
+                {!notification.read && (
+                  <Button onClick={() => handleMarkAsRead(notification)}>
+                    Mark as Read
+                  </Button>
                 )}
               </CardContent>
             </Card>
@@ -221,4 +143,4 @@ const Notifications: React.FC = () => {
   );
 };
 
-export default Notifications;
+export default RestaurantNotifications; 

@@ -9,8 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Trash, Plus } from 'lucide-react';
-import { getFirestore, collection, query, where, getDocs, onSnapshot, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot, addDoc, Timestamp } from 'firebase/firestore';
 import { User } from '@/types';
+import { db } from '@/firebase';
 
 const DonateFoodForm: React.FC = () => {
   const { user } = useAuth();
@@ -31,7 +32,6 @@ const DonateFoodForm: React.FC = () => {
 
       try {
         setIsLoadingNGOs(true);
-        const db = getFirestore();
         const usersRef = collection(db, 'users');
         
         // Query for all users with role 'ngo'
@@ -108,6 +108,23 @@ const DonateFoodForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Debug logs
+    console.log('Current user data:', user);
+    console.log('User role:', user?.role);
+    console.log('User ID:', user?.id);
+    console.log('User location:', user?.location);
+    
+    // Validate user data
+    if (!user?.id || !user?.name || !user?.location?.address) {
+      console.log('Missing user data:', {
+        id: user?.id,
+        name: user?.name,
+        location: user?.location
+      });
+      toast.error('Please complete your profile information before donating food');
+      return;
+    }
+    
     // Validate form
     if (!selectedNGO) {
       toast.error('Please select an NGO');
@@ -126,7 +143,6 @@ const DonateFoodForm: React.FC = () => {
     
     try {
       setIsLoading(true);
-      const db = getFirestore();
       
       // Get selected NGO data
       const selectedNGOData = ngos.find(ngo => ngo.id === selectedNGO);
@@ -134,10 +150,10 @@ const DonateFoodForm: React.FC = () => {
         throw new Error('Selected NGO not found');
       }
 
-      // Create food donation document
-      const foodDonationData = {
-        restaurantId: user?.id,
-        restaurantName: user?.name,
+      // Create food details document
+      const foodDetailsData = {
+        restaurantId: user.id,
+        restaurantName: user.name,
         ngoId: selectedNGO,
         ngoName: selectedNGOData.name,
         foodItems: foodItems.map(item => ({
@@ -149,35 +165,47 @@ const DonateFoodForm: React.FC = () => {
         status: 'pending',
         createdAt: Timestamp.now(),
         expiryDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
-        pickupAddress: user?.address || '',
-        contactNumber: user?.phone || ''
+        pickupAddress: user.location.address
       };
 
-      // Add food donation to Firestore
-      const foodDonationRef = await addDoc(collection(db, 'foodDonations'), foodDonationData);
+      console.log('Attempting to save food details:', foodDetailsData);
+
+      // Add food details to Firestore
+      const foodDetailsRef = await addDoc(collection(db, 'fooddetails'), foodDetailsData);
+      console.log('Food details saved successfully with ID:', foodDetailsRef.id);
 
       // Create notification for NGO
-      await addDoc(collection(db, 'notifications'), {
+      const notificationData = {
         userId: selectedNGO,
         title: 'New Food Donation Available',
-        message: `${user?.name} has food to donate. Total value: $${totalValue}`,
+        message: `${user.name} has food to donate. Total value: $${totalValue}`,
         type: 'food_donation',
         read: false,
-        donationId: foodDonationRef.id,
+        donationId: foodDetailsRef.id,
         createdAt: Timestamp.now(),
         foodDetails: {
           items: foodItems.map(item => `${item.name} (${item.quantity} ${item.unit})`).join(', '),
           totalValue,
-          expiryDate: foodDonationData.expiryDate,
-          pickupAddress: foodDonationData.pickupAddress,
-          contactNumber: foodDonationData.contactNumber
+          expiryDate: foodDetailsData.expiryDate,
+          pickupAddress: foodDetailsData.pickupAddress
         }
-      });
+      };
+
+      console.log('Attempting to save notification:', notificationData);
+      await addDoc(collection(db, 'notifications'), notificationData);
+      console.log('Notification saved successfully');
       
       toast.success('Food donation request sent successfully!');
-      navigate('/restaurant/history');
-    } catch (error) {
+      navigate('/restaurant/dashboard');
+    } catch (error: any) {
       console.error('Error submitting food donation:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack,
+        userRole: user?.role,
+        userId: user?.id
+      });
       toast.error('Failed to submit food donation request');
     } finally {
       setIsLoading(false);

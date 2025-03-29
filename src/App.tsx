@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,10 +14,13 @@ import Register from "@/pages/Register";
 // Restaurant Pages
 import RestaurantDashboard from "@/pages/restaurant/Dashboard";
 import DonateFoodForm from "@/pages/restaurant/DonateFoodForm";
+import RestaurantNotifications from "@/pages/restaurant/Notifications";
+import RestaurantDonations from "@/pages/restaurant/Donations";
 
 // NGO Pages
 import NGODashboard from "@/pages/ngo/Dashboard";
 import NGONotifications from "@/pages/ngo/Notifications";
+import NGODonations from "@/pages/ngo/Donations";
 
 // Admin Pages
 import AdminDashboard from "@/pages/admin/Dashboard";
@@ -45,6 +47,8 @@ const App = () => (
               <Route element={<AppLayout allowedRoles={['restaurant']} />}>
                 <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} />
                 <Route path="/restaurant/donate" element={<DonateFoodForm />} />
+                <Route path="/restaurant/notifications" element={<RestaurantNotifications />} />
+                <Route path="/restaurant/history" element={<RestaurantDonations />} />
                 {/* Add other restaurant routes */}
               </Route>
               
@@ -52,6 +56,7 @@ const App = () => (
               <Route element={<AppLayout allowedRoles={['ngo']} />}>
                 <Route path="/ngo/dashboard" element={<NGODashboard />} />
                 <Route path="/ngo/notifications" element={<NGONotifications />} />
+                <Route path="/ngo/donations" element={<NGODonations />} />
                 {/* Add other NGO routes */}
               </Route>
               

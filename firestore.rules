@@ -36,11 +36,42 @@ service cloud.firestore {
       );
     }
 
+    // Food Details collection
+    match /fooddetails/{foodId} {
+      allow read: if isAuthenticated() && (
+        resource.data.restaurantId == request.auth.uid ||
+        resource.data.ngoId == request.auth.uid
+      );
+      allow create: if isRestaurant();
+      allow update: if isAuthenticated() && (
+        resource.data.restaurantId == request.auth.uid ||
+        resource.data.ngoId == request.auth.uid
+      );
+      allow list: if isAuthenticated() && (
+        request.query.filters[0].op == '==' &&
+        request.query.filters[0].field == 'restaurantId' &&
+        request.query.filters[0].value == request.auth.uid
+      );
+    }
+
     // Notifications collection
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        resource.data.ngoId == request.auth.uid ||
+        resource.data.restaurantId == request.auth.uid
+      );
       allow create: if isAuthenticated();
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        resource.data.ngoId == request.auth.uid ||
+        resource.data.restaurantId == request.auth.uid
+      );
+      allow list: if isAuthenticated() && (
+        request.query.filters[0].op == '==' &&
+        request.query.filters[0].field == 'userId' &&
+        request.query.filters[0].value == request.auth.uid
+      );
     }
   }
 } 

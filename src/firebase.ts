@@ -22,7 +22,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+export const db = getFirestore(app);
 
 export const registerUser = async (email: string, password: string, userData: any) => {
   try {
@@ -45,10 +45,33 @@ export const registerUser = async (email: string, password: string, userData: an
 
 export const loginUser = async (email: string, password: string) => {
   try {
+    if (!email || !password) {
+      throw new Error('Email and password are required');
+    }
+
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    console.error('Login error details:', {
+      code: error.code,
+      message: error.message
+    });
+    
+    // Handle specific Firebase auth errors
+    switch (error.code) {
+      case 'auth/invalid-credential':
+        throw new Error('Invalid email or password. Please check your credentials.');
+      case 'auth/user-not-found':
+        throw new Error('No account found with this email. Please register first.');
+      case 'auth/wrong-password':
+        throw new Error('Incorrect password. Please try again.');
+      case 'auth/invalid-email':
+        throw new Error('Invalid email format. Please enter a valid email.');
+      case 'auth/too-many-requests':
+        throw new Error('Too many failed attempts. Please try again later.');
+      default:
+        throw new Error('Login failed. Please try again.');
+    }
   }
 };
 
@@ -72,7 +95,7 @@ export const getCurrentUser = () => {
 export const getUserData = async (userId: string) => {
   try {
     const userDoc = await getDoc(doc(db, 'users', userId));
-    return userDoc.exists() ? userDoc.data() : null;
+    return userDoc.exists() ? { id: userDoc.id, ...userDoc.data() } : null;
   } catch (error) {
     throw error;
   }

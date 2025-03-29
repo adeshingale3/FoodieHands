@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -40,9 +39,9 @@ const LoginForm: React.FC = () => {
       } else if (role === 'admin') {
         navigate('/admin/dashboard');
       }
-    } catch (error) {
-      toast.error('Login failed. Please check your credentials.');
-      console.error(error);
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast.error(error.message || 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
