@@ -48,6 +48,8 @@ const Notifications: React.FC = () => {
           } as Notification);
         });
 
+        // Sort notifications by creation date (newest first)
+        notificationList.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
         setNotifications(notificationList);
 
         // Set up real-time listener
@@ -59,6 +61,8 @@ const Notifications: React.FC = () => {
               ...doc.data()
             } as Notification);
           });
+          // Sort updated notifications by creation date (newest first)
+          updatedNotifications.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
           setNotifications(updatedNotifications);
         });
 

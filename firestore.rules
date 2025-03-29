@@ -22,10 +22,26 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    function isValidFoodItem(item) {
+      return item.name is string &&
+        item.name.size() > 0 &&
+        item.quantity is number &&
+        item.quantity > 0 &&
+        item.unit is string &&
+        item.unit in ['kg', 'g', 'liter', 'items'];
+    }
+
     // Users collection
     match /users/{userId} {
-      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
-      allow create: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+        request.resource.data.role in ['restaurant', 'ngo', 'admin'] &&
+        request.resource.data.email is string &&
+        request.resource.data.name is string &&
+        request.resource.data.location is map &&
+        request.resource.data.location.address is string &&
+        request.resource.data.location.lat is number &&
+        request.resource.data.location.lng is number;
       allow update: if request.auth.uid == userId || isAdmin();
       allow delete: if isAdmin();
     }
@@ -37,18 +53,19 @@ service cloud.firestore {
         resource.data.ngoId == request.auth.uid ||
         isAdmin()
       );
-      allow create: if isRestaurant() || isAdmin();
+      allow create: if (isRestaurant() || isAdmin()) && 
+        request.resource.data.restaurantId == request.auth.uid &&
+        request.resource.data.ngoId is string &&
+        request.resource.data.foodItems is list &&
+        request.resource.data.foodItems.size() > 0 &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.createdAt is timestamp;
       allow update: if isAuthenticated() && (
         resource.data.restaurantId == request.auth.uid ||
         resource.data.ngoId == request.auth.uid ||
         isAdmin()
       );
-      allow list: if isAuthenticated() && (
-        isAdmin() ||
-        (request.query.filters[0].op == '==' &&
-        request.query.filters[0].field == 'restaurantId' &&
-        request.query.filters[0].value == request.auth.uid)
-      );
+      allow delete: if isAdmin();
     }
 
     // Food Details collection
@@ -63,18 +80,19 @@ service cloud.firestore {
         request.resource.data.status == 'pending' &&
         request.resource.data.createdAt is timestamp &&
         request.resource.data.expiryDate is string &&
-        request.resource.data.pickupAddress is string;
+        request.resource.data.pickupAddress is string &&
+        request.resource.data.foodItems is list &&
+        request.resource.data.foodItems.size() > 0 &&
+        request.resource.data.totalValue is number &&
+        request.resource.data.totalValue > 0 &&
+        request.resource.data.totalQuantityInKg is number &&
+        request.resource.data.totalQuantityInKg > 0;
       allow update: if isAuthenticated() && (
         resource.data.restaurantId == request.auth.uid ||
         resource.data.ngoId == request.auth.uid ||
         isAdmin()
       );
-      allow list: if isAuthenticated() && (
-        isAdmin() ||
-        (request.query.filters[0].op == '==' &&
-        request.query.filters[0].field == 'restaurantId' &&
-        request.query.filters[0].value == request.auth.uid)
-      );
+      allow delete: if isAdmin();
     }
 
     // Notifications collection
@@ -86,31 +104,50 @@ service cloud.firestore {
         isAdmin()
       );
       allow create: if isAuthenticated() && 
-        (request.resource.data.userId != request.auth.uid || isAdmin());
+        request.resource.data.title is string &&
+        request.resource.data.message is string &&
+        request.resource.data.type is string &&
+        request.resource.data.read is bool &&
+        request.resource.data.createdAt is timestamp;
       allow update: if isAuthenticated() && (
         resource.data.userId == request.auth.uid ||
         resource.data.ngoId == request.auth.uid ||
         resource.data.restaurantId == request.auth.uid ||
         isAdmin()
       );
-      allow list: if isAuthenticated() && (
-        isAdmin() ||
-        (request.query.filters[0].op == '==' &&
-        request.query.filters[0].field == 'userId' &&
-        request.query.filters[0].value == request.auth.uid)
-      );
+      allow delete: if isAdmin();
     }
 
     // Restaurant Stats collection
     match /restaurantStats/{restaurantId} {
-      allow read: if isAuthenticated() && (request.auth.uid == restaurantId || isAdmin());
+      allow read: if isAuthenticated();
       allow create, update: if (isRestaurant() && request.auth.uid == restaurantId) || isAdmin();
+      allow delete: if isAdmin();
     }
 
     // NGO Stats collection
     match /ngoStats/{ngoId} {
-      allow read: if isAuthenticated() && (request.auth.uid == ngoId || isAdmin());
+      allow read: if isAuthenticated();
       allow create, update: if (isNGO() && request.auth.uid == ngoId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Disasters collection
+    match /disasters/{disasterId} {
+      allow read: if isAuthenticated();
+      allow create: if isNGO() && 
+        request.resource.data.ngoId == request.auth.uid &&
+        request.resource.data.title is string &&
+        request.resource.data.description is string &&
+        request.resource.data.location is string &&
+        request.resource.data.estimatedPeople is number &&
+        request.resource.data.urgency in ['high', 'medium', 'low'] &&
+        request.resource.data.contactNumber is string &&
+        request.resource.data.status == 'active' &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.updatedAt is timestamp;
+      allow update: if isNGO() && resource.data.ngoId == request.auth.uid || isAdmin();
+      allow delete: if isAdmin();
     }
   }
 } 

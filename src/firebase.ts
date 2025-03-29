@@ -95,8 +95,26 @@ export const getCurrentUser = () => {
 export const getUserData = async (userId: string) => {
   try {
     const userDoc = await getDoc(doc(db, 'users', userId));
-    return userDoc.exists() ? { id: userDoc.id, ...userDoc.data() } : null;
+    if (!userDoc.exists()) {
+      console.error('User document not found:', userId);
+      return null;
+    }
+    const userData = userDoc.data();
+    console.log('User data from Firestore:', userData);
+    
+    if (!userData.role) {
+      console.error('User role not found:', userId);
+      return null;
+    }
+    
+    if (!userData.email || !userData.name) {
+      console.error('User data incomplete:', userId);
+      return null;
+    }
+    
+    return { id: userDoc.id, ...userData };
   } catch (error) {
+    console.error('Error fetching user data:', error);
     throw error;
   }
 }; 

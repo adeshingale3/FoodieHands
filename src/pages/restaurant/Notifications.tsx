@@ -7,6 +7,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
+interface FoodDetails {
+  items: string;
+  totalValue: number;
+  expiryDate: string;
+  pickupAddress: string;
+}
+
+interface DisasterDetails {
+  title: string;
+  description: string;
+  location: string;
+  urgency: string;
+  contactNumber: string;
+}
+
 interface Notification {
   id: string;
   userId: string;
@@ -14,14 +29,10 @@ interface Notification {
   message: string;
   type: string;
   read: boolean;
-  donationId: string;
   createdAt: Timestamp;
-  foodDetails: {
-    items: string;
-    totalValue: number;
-    expiryDate: string;
-    pickupAddress: string;
-  };
+  donationId?: string;
+  foodDetails?: FoodDetails;
+  disasterDetails?: DisasterDetails;
 }
 
 const RestaurantNotifications = () => {
@@ -48,6 +59,8 @@ const RestaurantNotifications = () => {
           } as Notification);
         });
 
+        // Sort notifications by creation date (newest first)
+        notificationList.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
         setNotifications(notificationList);
 
         // Set up real-time listener
@@ -59,6 +72,8 @@ const RestaurantNotifications = () => {
               ...doc.data()
             } as Notification);
           });
+          // Sort updated notifications by creation date (newest first)
+          updatedNotifications.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
           setNotifications(updatedNotifications);
         });
 
@@ -102,35 +117,65 @@ const RestaurantNotifications = () => {
       ) : (
         <div className="space-y-4">
           {notifications.map((notification) => (
-            <Card key={notification.id} className={!notification.read ? 'border-primary' : ''}>
+            <Card 
+              key={notification.id} 
+              className={`${
+                !notification.read ? 'border-primary' : ''
+              } ${
+                notification.disasterDetails ? 'bg-red-50 border-red-200' : ''
+              }`}
+            >
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle>{notification.title}</CardTitle>
+                    <CardTitle className={notification.disasterDetails ? 'text-red-800' : ''}>
+                      {notification.title}
+                    </CardTitle>
                     <CardDescription>
                       {format(notification.createdAt.toDate(), 'PPP p')}
                     </CardDescription>
                   </div>
                   {!notification.read && (
-                    <span className="bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs">
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      notification.disasterDetails 
+                        ? 'bg-red-100 text-red-800' 
+                        : 'bg-primary text-primary-foreground'
+                    }`}>
                       New
                     </span>
                   )}
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="mb-4">{notification.message}</p>
+                <p className={`mb-4 ${notification.disasterDetails ? 'text-red-700' : ''}`}>
+                  {notification.message}
+                </p>
                 
-                <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                  <h3 className="font-semibold mb-2">Food Details:</h3>
-                  <p>Items: {notification.foodDetails.items}</p>
-                  <p>Total Value: ${notification.foodDetails.totalValue}</p>
-                  <p>Expiry Date: {format(new Date(notification.foodDetails.expiryDate), 'PPP')}</p>
-                  <p>Pickup Address: {notification.foodDetails.pickupAddress}</p>
-                </div>
+                {notification.foodDetails && (
+                  <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                    <h3 className="font-semibold mb-2">Food Details:</h3>
+                    <p>Items: {notification.foodDetails.items}</p>
+                    <p>Total Value: ${notification.foodDetails.totalValue}</p>
+                    <p>Expiry Date: {format(new Date(notification.foodDetails.expiryDate), 'PPP')}</p>
+                    <p>Pickup Address: {notification.foodDetails.pickupAddress}</p>
+                  </div>
+                )}
+
+                {notification.disasterDetails && (
+                  <div className="bg-red-100 p-4 rounded-lg mb-4">
+                    <h3 className="font-semibold mb-2 text-red-800">Disaster Details:</h3>
+                    <p className="text-red-700">Location: {notification.disasterDetails.location}</p>
+                    <p className="text-red-700">Description: {notification.disasterDetails.description}</p>
+                    <p className="text-red-700">Urgency: <span className="capitalize">{notification.disasterDetails.urgency}</span></p>
+                    <p className="text-red-700">Contact: {notification.disasterDetails.contactNumber}</p>
+                  </div>
+                )}
 
                 {!notification.read && (
-                  <Button onClick={() => handleMarkAsRead(notification)}>
+                  <Button 
+                    onClick={() => handleMarkAsRead(notification)}
+                    variant={notification.disasterDetails ? "destructive" : "default"}
+                  >
                     Mark as Read
                   </Button>
                 )}

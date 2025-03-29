@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, Package, Bell, Settings, BarChart4, 
-  Users, ShoppingBag, FileText, UserCog 
+  Users, ShoppingBag, FileText, UserCog, Trophy,
+  AlertTriangle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +20,7 @@ const Sidebar: React.FC = () => {
           <NavLink href="/restaurant/donate" icon={<Package />} label="Donate Food" active={location.pathname === '/restaurant/donate'} />
           <NavLink href="/restaurant/history" icon={<FileText />} label="Donation History" active={location.pathname === '/restaurant/history'} />
           <NavLink href="/restaurant/notifications" icon={<Bell />} label="Notifications" active={location.pathname === '/restaurant/notifications'} />
+          <NavLink href="/leaderboard" icon={<Trophy />} label="Leaderboard" active={location.pathname === '/leaderboard'} />
           <NavLink href="/restaurant/settings" icon={<Settings />} label="Settings" active={location.pathname === '/restaurant/settings'} />
         </div>
       );
@@ -32,6 +33,8 @@ const Sidebar: React.FC = () => {
           {user && 'isPremium' in user && user.isPremium && (
             <NavLink href="/ngo/analytics" icon={<BarChart4 />} label="Analytics" active={location.pathname === '/ngo/analytics'} />
           )}
+          <NavLink href="/ngo/report-disaster" icon={<AlertTriangle />} label="Report Disaster" active={location.pathname === '/ngo/report-disaster'} />
+          <NavLink href="/leaderboard" icon={<Trophy />} label="Leaderboard" active={location.pathname === '/leaderboard'} />
           <NavLink href="/ngo/settings" icon={<Settings />} label="Settings" active={location.pathname === '/ngo/settings'} />
         </div>
       );
@@ -42,6 +45,7 @@ const Sidebar: React.FC = () => {
           <NavLink href="/admin/restaurants" icon={<ShoppingBag />} label="Restaurants" active={location.pathname === '/admin/restaurants'} />
           <NavLink href="/admin/ngos" icon={<Users />} label="NGOs" active={location.pathname === '/admin/ngos'} />
           <NavLink href="/admin/donations" icon={<Package />} label="Donations" active={location.pathname === '/admin/donations'} />
+          <NavLink href="/leaderboard" icon={<Trophy />} label="Leaderboard" active={location.pathname === '/leaderboard'} />
           <NavLink href="/admin/settings" icon={<UserCog />} label="Settings" active={location.pathname === '/admin/settings'} />
         </div>
       );

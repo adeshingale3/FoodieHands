@@ -28,35 +28,78 @@ const DonateFoodForm: React.FC = () => {
   
   useEffect(() => {
     const fetchNGOs = async () => {
-      if (!user) return;
+      console.log('Starting fetchNGOs function');
+      if (!user) {
+        console.log('No user found');
+        return;
+      }
+
+      console.log('Current user data:', {
+        id: user.id,
+        role: user.role,
+        name: user.name,
+        email: user.email
+      });
+
+      if (!user.role) {
+        console.error('User role not found:', user);
+        toast.error('Please complete your profile setup');
+        return;
+      }
+
+      if (user.role !== 'restaurant') {
+        console.error('Invalid user role:', user.role);
+        toast.error('Only restaurants can donate food');
+        return;
+      }
 
       try {
         setIsLoadingNGOs(true);
         const usersRef = collection(db, 'users');
         
+        console.log('Creating query for NGOs');
         // Query for all users with role 'ngo'
         const q = query(usersRef, where('role', '==', 'ngo'));
         
+        console.log('Executing getDocs query');
         // Get initial data
         const querySnapshot = await getDocs(q);
+        console.log('Query executed, processing results');
+        
         const ngoList: User[] = [];
         
         querySnapshot.forEach((doc) => {
           const ngoData = doc.data() as User;
+          console.log('Processing NGO data:', {
+            id: doc.id,
+            role: ngoData.role,
+            name: ngoData.name
+          });
+          
+          if (!ngoData.role || ngoData.role !== 'ngo') {
+            console.warn('Invalid NGO data found:', ngoData);
+            return;
+          }
           ngoList.push({
             id: doc.id,
             ...ngoData,
           });
         });
 
+        console.log('Setting NGOs state with:', ngoList.length, 'NGOs');
         // Set initial data
         setNGOs(ngoList);
 
         // Set up real-time listener for updates
+        console.log('Setting up real-time listener');
         const unsubscribe = onSnapshot(q, (snapshot) => {
           const updatedNGOs: User[] = [];
           snapshot.forEach((doc) => {
             const ngoData = doc.data() as User;
+            if (!ngoData.role || ngoData.role !== 'ngo') {
+              console.warn('Invalid NGO data found:', ngoData);
+              return;
+            }
             updatedNGOs.push({
               id: doc.id,
               ...ngoData,
@@ -71,6 +114,11 @@ const DonateFoodForm: React.FC = () => {
         return () => unsubscribe();
       } catch (error) {
         console.error('Error fetching NGOs:', error);
+        console.error('Error details:', {
+          code: error.code,
+          message: error.message,
+          stack: error.stack
+        });
         toast.error('Failed to load NGOs');
       } finally {
         setIsLoadingNGOs(false);
@@ -190,6 +238,12 @@ const DonateFoodForm: React.FC = () => {
       };
 
       console.log('Attempting to save food details:', foodDetailsData);
+      console.log('User role verification:', {
+        isAuthenticated: !!user,
+        userRole: user?.role,
+        userId: user?.id,
+        restaurantId: foodDetailsData.restaurantId
+      });
 
       // Add food details to Firestore
       const foodDetailsRef = await addDoc(collection(db, 'fooddetails'), foodDetailsData);
@@ -239,27 +293,6 @@ const DonateFoodForm: React.FC = () => {
       console.log('Attempting to save notification:', notificationData);
       await addDoc(collection(db, 'notifications'), notificationData);
       console.log('Notification saved successfully');
-
-      // Update NGO stats to increment pending donations
-      const ngoStatsRef = doc(db, 'ngoStats', selectedNGO);
-      const ngoStatsDoc = await getDoc(ngoStatsRef);
-
-      if (ngoStatsDoc.exists()) {
-        // Update existing stats
-        await setDoc(ngoStatsRef, {
-          pendingDonations: increment(1),
-          lastUpdated: Timestamp.now()
-        }, { merge: true });
-      } else {
-        // Create new stats document
-        await setDoc(ngoStatsRef, {
-          pendingDonations: 1,
-          totalReceivedFood: 0,
-          totalValue: 0,
-          totalPoints: 0,
-          lastUpdated: Timestamp.now()
-        });
-      }
       
       toast.success('Food donation request sent successfully!');
       navigate('/restaurant/dashboard');
@@ -273,7 +306,8 @@ const DonateFoodForm: React.FC = () => {
         userId: user?.id,
         path: error.path,
         name: error.name,
-        collection: error.collection
+        collection: error.collection,
+        data: error.data
       });
       toast.error('Failed to submit food donation request');
     } finally {
