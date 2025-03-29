@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Trash, Plus } from 'lucide-react';
-import { collection, query, where, getDocs, onSnapshot, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot, addDoc, Timestamp, doc, getDoc, setDoc, increment } from 'firebase/firestore';
 import { User } from '@/types';
 import { db } from '@/firebase';
 
@@ -150,6 +150,25 @@ const DonateFoodForm: React.FC = () => {
         throw new Error('Selected NGO not found');
       }
 
+      // Calculate total quantity in kg
+      const totalQuantityInKg = foodItems.reduce((sum, item) => {
+        switch (item.unit) {
+          case 'kg':
+            return sum + item.quantity;
+          case 'g':
+            return sum + (item.quantity / 1000);
+          case 'liter':
+            return sum + item.quantity; // Assuming 1L = 1kg for liquids
+          case 'items':
+            return sum + (item.quantity * 0.5); // Assuming average item weight of 0.5kg
+          default:
+            return sum;
+        }
+      }, 0);
+
+      // Calculate points (5 points per kg)
+      const pointsEarned = Math.round(totalQuantityInKg * 5);
+
       // Create food details document
       const foodDetailsData = {
         restaurantId: user.id,
@@ -162,9 +181,11 @@ const DonateFoodForm: React.FC = () => {
           unit: item.unit
         })),
         totalValue: totalValue,
+        totalQuantityInKg: totalQuantityInKg,
+        pointsEarned: pointsEarned,
         status: 'pending',
         createdAt: Timestamp.now(),
-        expiryDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
+        expiryDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         pickupAddress: user.location.address
       };
 
@@ -173,6 +194,30 @@ const DonateFoodForm: React.FC = () => {
       // Add food details to Firestore
       const foodDetailsRef = await addDoc(collection(db, 'fooddetails'), foodDetailsData);
       console.log('Food details saved successfully with ID:', foodDetailsRef.id);
+
+      // Update restaurant stats
+      const statsRef = doc(db, 'restaurantStats', user.id);
+      const statsDoc = await getDoc(statsRef);
+
+      if (statsDoc.exists()) {
+        // Update existing stats
+        await setDoc(statsRef, {
+          totalDonations: increment(1),
+          totalQuantityInKg: increment(totalQuantityInKg),
+          totalValue: increment(totalValue),
+          totalPoints: increment(pointsEarned),
+          lastUpdated: Timestamp.now()
+        }, { merge: true });
+      } else {
+        // Create new stats document
+        await setDoc(statsRef, {
+          totalDonations: 1,
+          totalQuantityInKg: totalQuantityInKg,
+          totalValue: totalValue,
+          totalPoints: pointsEarned,
+          lastUpdated: Timestamp.now()
+        });
+      }
 
       // Create notification for NGO
       const notificationData = {
@@ -204,7 +249,10 @@ const DonateFoodForm: React.FC = () => {
         message: error.message,
         stack: error.stack,
         userRole: user?.role,
-        userId: user?.id
+        userId: user?.id,
+        path: error.path,
+        name: error.name,
+        collection: error.collection
       });
       toast.error('Failed to submit food donation request');
     } finally {

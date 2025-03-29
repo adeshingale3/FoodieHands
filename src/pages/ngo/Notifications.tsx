@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { collection, query, where, getDocs, onSnapshot, updateDoc, doc, Timestamp, getDoc, addDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot, updateDoc, doc, Timestamp, getDoc, addDoc, increment, setDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,6 +85,20 @@ const Notifications: React.FC = () => {
       const foodDonationData = foodDonationDoc.data();
       const restaurantId = foodDonationData.restaurantId;
 
+      // Calculate total quantity in kg
+      const totalQuantityInKg = foodDonationData.foodItems.reduce((sum: number, item: any) => {
+        let quantity = item.quantity;
+        if (item.unit.toLowerCase() === 'g') {
+          quantity = quantity / 1000;
+        } else if (item.unit.toLowerCase() === 'ml') {
+          quantity = quantity / 1000;
+        }
+        return sum + quantity;
+      }, 0);
+
+      // Calculate points (5 points per kg)
+      const pointsEarned = Math.round(totalQuantityInKg * 5);
+
       // Update notification status
       await updateDoc(doc(db, 'notifications', notification.id), {
         read: true,
@@ -96,6 +110,30 @@ const Notifications: React.FC = () => {
         status: 'accepted',
         acceptedAt: Timestamp.now()
       });
+
+      // Update NGO stats
+      const statsRef = doc(db, 'ngoStats', user?.id || '');
+      const statsDoc = await getDoc(statsRef);
+
+      if (statsDoc.exists()) {
+        // Update existing stats
+        await setDoc(statsRef, {
+          totalReceivedFood: increment(totalQuantityInKg),
+          totalValue: increment(foodDonationData.totalValue),
+          totalPoints: increment(pointsEarned),
+          pendingDonations: increment(-1),
+          lastUpdated: Timestamp.now()
+        }, { merge: true });
+      } else {
+        // Create new stats document
+        await setDoc(statsRef, {
+          totalReceivedFood: totalQuantityInKg,
+          totalValue: foodDonationData.totalValue,
+          totalPoints: pointsEarned,
+          pendingDonations: 0,
+          lastUpdated: Timestamp.now()
+        });
+      }
 
       // Create notification for restaurant
       await addDoc(collection(db, 'notifications'), {

@@ -21,6 +21,7 @@ import RestaurantDonations from "@/pages/restaurant/Donations";
 import NGODashboard from "@/pages/ngo/Dashboard";
 import NGONotifications from "@/pages/ngo/Notifications";
 import NGODonations from "@/pages/ngo/Donations";
+import Analytics from '@/pages/ngo/Analytics';
 
 // Admin Pages
 import AdminDashboard from "@/pages/admin/Dashboard";
@@ -57,6 +58,7 @@ const App = () => (
                 <Route path="/ngo/dashboard" element={<NGODashboard />} />
                 <Route path="/ngo/notifications" element={<NGONotifications />} />
                 <Route path="/ngo/donations" element={<NGODonations />} />
+                <Route path="/ngo/analytics" element={<Analytics />} />
                 {/* Add other NGO routes */}
               </Route>
               

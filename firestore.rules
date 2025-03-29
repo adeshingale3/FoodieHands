@@ -42,7 +42,9 @@ service cloud.firestore {
         resource.data.restaurantId == request.auth.uid ||
         resource.data.ngoId == request.auth.uid
       );
-      allow create: if isRestaurant();
+      allow create: if isRestaurant() && 
+        request.resource.data.restaurantId == request.auth.uid &&
+        request.resource.data.status == 'pending';
       allow update: if isAuthenticated() && (
         resource.data.restaurantId == request.auth.uid ||
         resource.data.ngoId == request.auth.uid
@@ -72,6 +74,18 @@ service cloud.firestore {
         request.query.filters[0].field == 'userId' &&
         request.query.filters[0].value == request.auth.uid
       );
+    }
+
+    // Restaurant Stats collection
+    match /restaurantStats/{restaurantId} {
+      allow read: if isAuthenticated() && request.auth.uid == restaurantId;
+      allow create, update: if isRestaurant() && request.auth.uid == restaurantId;
+    }
+
+    // NGO Stats collection
+    match /ngoStats/{ngoId} {
+      allow read: if isAuthenticated() && request.auth.uid == ngoId;
+      allow create, update: if isNGO() && request.auth.uid == ngoId;
     }
   }
 } 
