@@ -1,8 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useMap } from '@/contexts/MapContext';
 import { FoodItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,30 +9,76 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Trash, Plus } from 'lucide-react';
+import { getFirestore, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { User } from '@/types';
 
 const DonateFoodForm: React.FC = () => {
   const { user } = useAuth();
-  const { selectedLocation, findNearbyNGOs } = useMap();
   const navigate = useNavigate();
   
   const [foodItems, setFoodItems] = useState<FoodItem[]>([
     { id: '1', name: '', quantity: 0, unit: 'kg' }
   ]);
-  const [nearbyNGOs, setNearbyNGOs] = useState<any[]>([]);
+  const [ngos, setNGOs] = useState<User[]>([]);
   const [selectedNGO, setSelectedNGO] = useState<string>('');
   const [totalValue, setTotalValue] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingNGOs, setIsLoadingNGOs] = useState<boolean>(true);
   
   useEffect(() => {
-    const fetchNearbyNGOs = async () => {
-      if (user?.location) {
-        const ngos = await findNearbyNGOs(user.location);
-        setNearbyNGOs(ngos);
+    const fetchNGOs = async () => {
+      if (!user) return;
+
+      try {
+        setIsLoadingNGOs(true);
+        const db = getFirestore();
+        const usersRef = collection(db, 'users');
+        
+        // Query for all users with role 'ngo'
+        const q = query(usersRef, where('role', '==', 'ngo'));
+        
+        // Get initial data
+        const querySnapshot = await getDocs(q);
+        const ngoList: User[] = [];
+        
+        querySnapshot.forEach((doc) => {
+          const ngoData = doc.data() as User;
+          ngoList.push({
+            id: doc.id,
+            ...ngoData,
+          });
+        });
+
+        // Set initial data
+        setNGOs(ngoList);
+
+        // Set up real-time listener for updates
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const updatedNGOs: User[] = [];
+          snapshot.forEach((doc) => {
+            const ngoData = doc.data() as User;
+            updatedNGOs.push({
+              id: doc.id,
+              ...ngoData,
+            });
+          });
+          setNGOs(updatedNGOs);
+        }, (error) => {
+          console.error('Error in NGO listener:', error);
+          toast.error('Error updating NGO list');
+        });
+
+        return () => unsubscribe();
+      } catch (error) {
+        console.error('Error fetching NGOs:', error);
+        toast.error('Failed to load NGOs');
+      } finally {
+        setIsLoadingNGOs(false);
       }
     };
-    
-    fetchNearbyNGOs();
-  }, [user, findNearbyNGOs]);
+
+    fetchNGOs();
+  }, [user]);
   
   // Calculate total quantity
   const totalQuantity = foodItems.reduce(
@@ -202,21 +246,30 @@ const DonateFoodForm: React.FC = () => {
               
               <div>
                 <Label htmlFor="ngo">Select NGO</Label>
-                <Select value={selectedNGO} onValueChange={setSelectedNGO}>
-                  <SelectTrigger id="ngo">
-                    <SelectValue placeholder="Select nearby NGO" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {nearbyNGOs.map((ngo) => (
-                      <SelectItem key={ngo.id} value={ngo.id}>
-                        {ngo.name} ({ngo.distance.toFixed(1)} km away)
-                      </SelectItem>
+                {isLoadingNGOs ? (
+                  <div className="w-full p-2 border rounded-md bg-gray-50">
+                    Loading NGOs...
+                  </div>
+                ) : ngos.length === 0 ? (
+                  <div className="w-full p-2 border rounded-md bg-gray-50">
+                    No NGOs registered yet
+                  </div>
+                ) : (
+                  <select
+                    id="ngo"
+                    value={selectedNGO}
+                    onChange={(e) => setSelectedNGO(e.target.value)}
+                    className="w-full p-2 border rounded-md"
+                    required
+                  >
+                    <option value="">Select an NGO</option>
+                    {ngos.map((ngo) => (
+                      <option key={ngo.id} value={ngo.id}>
+                        {ngo.name}
+                      </option>
                     ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-gray-500 mt-1">
-                  Showing NGOs within 10km of your location
-                </p>
+                  </select>
+                )}
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
