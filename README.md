@@ -28,7 +28,8 @@ A web application that connects restaurants(Individuals also) with NGOs to reduc
 ## Screenshots 📸
 
 ### Restaurant Dashboard
-<div align="center">
+<div float="left>
+    <div align="center">
   <img src="./public/screenshots/Restaurant%20Dashboard.png" alt="Restaurant Dashboard" width="400"/>
   <p><i>Restaurant dashboard showing stats and quick actions</i></p>
 </div>
@@ -64,6 +65,7 @@ A web application that connects restaurants(Individuals also) with NGOs to reduc
 <div align="center">
   <img src="./public/screenshots/notification.png" alt="Notifications" width="400"/>
   <p><i>Real-time notification system</i></p>
+</div>
 </div>
 
 ## Tech Stack 🛠️
