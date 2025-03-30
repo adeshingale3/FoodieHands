@@ -27,44 +27,44 @@ A web application that connects restaurants(Individuals also) with NGOs to reduc
 
 ## Screenshots 📸
 
-<table>
-<tr>
-<td>
+<div style="display: flex; overflow-x: auto; gap: 20px; padding: 20px 0;">
+
+<div style="flex: 0 0 auto;">
 <img src="./public/screenshots/Restaurant%20Dashboard.png" alt="Restaurant Dashboard" width="400"/>
 <p><i>Restaurant Dashboard</i></p>
-</td>
-<td>
+</div>
+
+<div style="flex: 0 0 auto;">
 <img src="./public/screenshots/NGO%20Dashboard.png" alt="NGO Dashboard" width="400"/>
 <p><i>NGO Dashboard</i></p>
-</td>
-</tr>
-<tr>
-<td>
+</div>
+
+<div style="flex: 0 0 auto;">
 <img src="./public/screenshots/AdminDashboard.png" alt="Admin Dashboard" width="400"/>
 <p><i>Admin Dashboard</i></p>
-</td>
-<td>
+</div>
+
+<div style="flex: 0 0 auto;">
 <img src="./public/screenshots/Analytics-NGO.png" alt="NGO Analysis" width="400"/>
 <p><i>NGO Analytics</i></p>
-</td>
-</tr>
-<tr>
-<td>
+</div>
+
+<div style="flex: 0 0 auto;">
 <img src="./public/screenshots/AdminDonationsTrackcing.png" alt="Admin Donations Tracking" width="400"/>
 <p><i>Admin Donations Tracking</i></p>
-</td>
-<td>
+</div>
+
+<div style="flex: 0 0 auto;">
 <img src="./public/screenshots/Leaderboard.png" alt="Leaderboard" width="400"/>
 <p><i>Global Leaderboard</i></p>
-</td>
-</tr>
-<tr>
-<td>
+</div>
+
+<div style="flex: 0 0 auto;">
 <img src="./public/screenshots/notification.png" alt="Notifications" width="400"/>
 <p><i>Real-time Notifications</i></p>
-</td>
-</tr>
-</table>
+</div>
+
+</div>
 
 ## Tech Stack 🛠️
 
