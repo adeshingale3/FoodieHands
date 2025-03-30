@@ -83,7 +83,13 @@ const DonateFoodForm: React.FC = () => {
 
   const updateFoodItem = (index: number, field: keyof FoodItem, value: string | number) => {
     const newFoodItems = [...foodItems];
-    newFoodItems[index] = { ...newFoodItems[index], [field]: value };
+    if (field === 'quantity') {
+      // Convert string to number for quantity
+      const numValue = value === '' ? 0 : Number(value);
+      newFoodItems[index] = { ...newFoodItems[index], [field]: numValue };
+    } else {
+      newFoodItems[index] = { ...newFoodItems[index], [field]: value };
+    }
     setFoodItems(newFoodItems);
   };
 
@@ -198,10 +204,17 @@ const DonateFoodForm: React.FC = () => {
             <div className="space-y-2">
               <Label>Quantity</Label>
               <Input
-                type="number"
+                type="text"
                 value={item.quantity}
-                onChange={(e) => updateFoodItem(index, 'quantity', parseInt(e.target.value))}
-                placeholder="0"
+                onChange={(e) => {
+                  // Only allow numbers and decimal point
+                  const value = e.target.value.replace(/[^0-9.]/g, '');
+                  // Ensure only one decimal point
+                  const parts = value.split('.');
+                  if (parts.length > 2) return;
+                  updateFoodItem(index, 'quantity', value);
+                }}
+                placeholder="Enter quantity"
                 required
               />
             </div>
@@ -224,21 +237,22 @@ const DonateFoodForm: React.FC = () => {
               />
             </div>
             {foodItems.length > 1 && (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => removeFoodItem(index)}
-                className="md:col-span-4"
-              >
-                Remove Item
-              </Button>
+              <div className="md:col-span-4 flex justify-end">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => removeFoodItem(index)}
+                >
+                  Remove
+                </Button>
+              </div>
             )}
           </div>
         ))}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? 'Submitting...' : 'Submit Donation Request'}
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? 'Submitting...' : 'Submit Donation'}
       </Button>
     </form>
   );

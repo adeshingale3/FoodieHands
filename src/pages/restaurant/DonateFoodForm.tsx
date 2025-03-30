@@ -347,7 +347,7 @@ const DonateFoodForm: React.FC = () => {
                       min="0"
                       step="0.1"
                       value={item.quantity}
-                      onChange={(e) => handleFoodItemChange(item.id, 'quantity', parseFloat(e.target.value) || 0)}
+                      onChange={(e) => handleFoodItemChange(item.id, 'quantity', parseFloat(e.target.value))}
                     />
                   </div>
                   
