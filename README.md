@@ -27,40 +27,40 @@ A web application that connects restaurants(Individuals also) with NGOs to reduc
 
 ## Screenshots 📸
 
-<div style="display: flex; overflow-x: auto; gap: 20px; padding: 5px 0; scrollbar-width: thin; -webkit-overflow-scrolling: touch; white-space: nowrap;">
+<div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px 0; justify-content: center;">
 
-<div style="display: inline-block; flex: 0 0 auto; margin-right: 5px;">
-<img src="./public/screenshots/Restaurant%20Dashboard.png" alt="Restaurant Dashboard" width="400"/>
+<div style="flex: 1 1 300px; max-width: 400px; text-align: center;">
+<img src="./public/screenshots/Restaurant%20Dashboard.png" alt="Restaurant Dashboard" style="width: 100%; height: auto; max-width: 400px;"/>
 <p><i>Restaurant Dashboard</i></p>
 </div>
 
-<div style="display: inline-block; flex: 0 0 auto; margin-right: 5px;">
-<img src="./public/screenshots/NGO%20Dashboard.png" alt="NGO Dashboard" width="400"/>
+<div style="flex: 1 1 300px; max-width: 400px; text-align: center;">
+<img src="./public/screenshots/NGO%20Dashboard.png" alt="NGO Dashboard" style="width: 100%; height: auto; max-width: 400px;"/>
 <p><i>NGO Dashboard</i></p>
 </div>
 
-<div style="display: inline-block; flex: 0 0 auto; margin-right: 5px;">
-<img src="./public/screenshots/AdminDashboard.png" alt="Admin Dashboard" width="400"/>
+<div style="flex: 1 1 300px; max-width: 400px; text-align: center;">
+<img src="./public/screenshots/AdminDashboard.png" alt="Admin Dashboard" style="width: 100%; height: auto; max-width: 400px;"/>
 <p><i>Admin Dashboard</i></p>
 </div>
 
-<div style="display: inline-block; flex: 0 0 auto; margin-right: 5px;">
-<img src="./public/screenshots/Analytics-NGO.png" alt="NGO Analysis" width="400"/>
+<div style="flex: 1 1 300px; max-width: 400px; text-align: center;">
+<img src="./public/screenshots/Analytics-NGO.png" alt="NGO Analysis" style="width: 100%; height: auto; max-width: 400px;"/>
 <p><i>NGO Analytics</i></p>
 </div>
 
-<div style="display: inline-block; flex: 0 0 auto; margin-right: 5px;">
-<img src="./public/screenshots/AdminDonationsTrackcing.png" alt="Admin Donations Tracking" width="400"/>
+<div style="flex: 1 1 300px; max-width: 400px; text-align: center;">
+<img src="./public/screenshots/AdminDonationsTrackcing.png" alt="Admin Donations Tracking" style="width: 100%; height: auto; max-width: 400px;"/>
 <p><i>Admin Donations Tracking</i></p>
 </div>
 
-<div style="display: inline-block; flex: 0 0 auto; margin-right: 5px;">
-<img src="./public/screenshots/Leaderboard.png" alt="Leaderboard" width="400"/>
+<div style="flex: 1 1 300px; max-width: 400px; text-align: center;">
+<img src="./public/screenshots/Leaderboard.png" alt="Leaderboard" style="width: 100%; height: auto; max-width: 400px;"/>
 <p><i>Global Leaderboard</i></p>
 </div>
 
-<div style="display: inline-block; flex: 0 0 auto; margin-right: 5px;">
-<img src="./public/screenshots/notification.png" alt="Notifications" width="400"/>
+<div style="flex: 1 1 300px; max-width: 400px; text-align: center;">
+<img src="./public/screenshots/notification.png" alt="Notifications" style="width: 100%; height: auto; max-width: 400px;"/>
 <p><i>Real-time Notifications</i></p>
 </div>
 
