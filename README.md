@@ -2,7 +2,7 @@
 
 A web application that connects restaurants(Individuals also) with NGOs to reduce food waste and help those in need. Restaurants can donate surplus food, and NGOs can collect and distribute it to people who need it.
 
-[Foodie-Hands]((https://foodie-hands.vercel.app/))
+[Foodie-Hands](https://foodie-hands.vercel.app/)
 
 ## Features 🌟
 
