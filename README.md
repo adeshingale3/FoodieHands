@@ -27,32 +27,44 @@ A web application that connects restaurants(Individuals also) with NGOs to reduc
 
 ## Screenshots 📸
 
-### Authentication
-
 ### Restaurant Dashboard
-![Restaurant Dashboard](./public/screenshots/Restaurant%20Dashboard.png)
-*Restaurant dashboard showing stats and quick actions*
+<div align="center">
+  <img src="./public/screenshots/Restaurant%20Dashboard.png" alt="Restaurant Dashboard" width="400"/>
+  <p><i>Restaurant dashboard showing stats and quick actions</i></p>
+</div>
 
 ### NGO Dashboard
-![NGO Dashboard](./public/screenshots/NGO%20Dashboard.png)
-*NGO dashboard with donation requests*
+<div align="center">
+  <img src="./public/screenshots/NGO%20Dashboard.png" alt="NGO Dashboard" width="400"/>
+  <p><i>NGO dashboard with donation requests</i></p>
+</div>
 
 ### Admin Panel
-![Admin Dashboard](./public/screenshots/AdminDashboard.png)
-*Admin dashboard with system overview*
+<div align="center">
+  <img src="./public/screenshots/AdminDashboard.png" alt="Admin Dashboard" width="400"/>
+  <p><i>Admin dashboard with system overview</i></p>
+</div>
 
-![NGO Analysis](./public/screenshots/Analytics-NGO.png)
-*Analytical Report for NGOs*
+<div align="center">
+  <img src="./public/screenshots/Analytics-NGO.png" alt="NGO Analysis" width="400"/>
+  <p><i>Analytical Report for NGOs</i></p>
+</div>
 
-![Admin Can Track all Donations](./public/screenshots/AdminDonationsTrackcing.png)
-*Admin can track all donations*
+<div align="center">
+  <img src="./public/screenshots/AdminDonationsTrackcing.png" alt="Admin Donations Tracking" width="400"/>
+  <p><i>Admin can track all donations</i></p>
+</div>
 
 ### Global Features
-![Leaderboard](./public/screenshots/Leaderboard.png)
-*Global leaderboard showing top donors and NGOs*
+<div align="center">
+  <img src="./public/screenshots/Leaderboard.png" alt="Leaderboard" width="400"/>
+  <p><i>Global leaderboard showing top donors and NGOs</i></p>
+</div>
 
-![Notifications](./public/screenshots/notification.png)
-*Real-time notification system*
+<div align="center">
+  <img src="./public/screenshots/notification.png" alt="Notifications" width="400"/>
+  <p><i>Real-time notification system</i></p>
+</div>
 
 ## Tech Stack 🛠️
 
