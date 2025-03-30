@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { MapProvider } from "@/contexts/MapContext";
 import AppLayout from "@/components/layouts/AppLayout";
+import { LoaderProvider } from '@/contexts/LoaderContext';
 
 // Auth Pages
 import Login from "@/pages/Login";
@@ -42,53 +43,55 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <MapProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              
-              {/* Authenticated Routes */}
-              <Route element={<AppLayout allowedRoles={['restaurant', 'ngo', 'admin']} />}>
-                <Route path="/leaderboard" element={<GlobalLeaderboard />} />
-              </Route>
-              
-              {/* Restaurant Routes */}
-              <Route element={<AppLayout allowedRoles={['restaurant']} />}>
-                <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} />
-                <Route path="/restaurant/donate" element={<DonateFoodForm />} />
-                <Route path="/restaurant/notifications" element={<RestaurantNotifications />} />
-                <Route path="/restaurant/history" element={<RestaurantDonations />} />
-              </Route>
-              
-              {/* NGO Routes */}
-              <Route element={<AppLayout allowedRoles={['ngo']} />}>
-                <Route path="/ngo/dashboard" element={<NGODashboard />} />
-                <Route path="/ngo/notifications" element={<NGONotifications />} />
-                <Route path="/ngo/donations" element={<NGODonations />} />
-                <Route path="/ngo/analytics" element={<Analytics />} />
-                <Route path="/ngo/report-disaster" element={<ReportDisaster />} />
-              </Route>
-              
-              {/* Admin Routes */}
-              <Route element={<AppLayout allowedRoles={['admin']} />}>
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/restaurants" element={<Restaurants />} />
-                <Route path="/admin/ngos" element={<NGOs />} />
-                <Route path="/admin/donations" element={<Donations />} />
-              </Route>
-              
-              {/* Redirect to login */}
-              <Route path="/" element={<Login />} />
-              
-              {/* 404 Page */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </MapProvider>
+        <LoaderProvider>
+          <MapProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                
+                {/* Authenticated Routes */}
+                <Route element={<AppLayout allowedRoles={['restaurant', 'ngo', 'admin']} />}>
+                  <Route path="/leaderboard" element={<GlobalLeaderboard />} />
+                </Route>
+                
+                {/* Restaurant Routes */}
+                <Route element={<AppLayout allowedRoles={['restaurant']} />}>
+                  <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} />
+                  <Route path="/restaurant/donate" element={<DonateFoodForm />} />
+                  <Route path="/restaurant/notifications" element={<RestaurantNotifications />} />
+                  <Route path="/restaurant/history" element={<RestaurantDonations />} />
+                </Route>
+                
+                {/* NGO Routes */}
+                <Route element={<AppLayout allowedRoles={['ngo']} />}>
+                  <Route path="/ngo/dashboard" element={<NGODashboard />} />
+                  <Route path="/ngo/notifications" element={<NGONotifications />} />
+                  <Route path="/ngo/donations" element={<NGODonations />} />
+                  <Route path="/ngo/analytics" element={<Analytics />} />
+                  <Route path="/ngo/report-disaster" element={<ReportDisaster />} />
+                </Route>
+                
+                {/* Admin Routes */}
+                <Route element={<AppLayout allowedRoles={['admin']} />}>
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/restaurants" element={<Restaurants />} />
+                  <Route path="/admin/ngos" element={<NGOs />} />
+                  <Route path="/admin/donations" element={<Donations />} />
+                </Route>
+                
+                {/* Redirect to login */}
+                <Route path="/" element={<Login />} />
+                
+                {/* 404 Page */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </MapProvider>
+        </LoaderProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
