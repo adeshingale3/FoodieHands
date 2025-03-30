@@ -25,6 +25,35 @@ A web application that connects restaurants(Individuals also) with NGOs to reduc
   - View platform analytics
   - Manage user roles and permissions
 
+## Screenshots 📸
+
+### Authentication
+
+### Restaurant Dashboard
+![Restaurant Dashboard](/Foodie-Hands/public/screenshots/Restaurant%20Dashboard.png)
+*Restaurant dashboard showing stats and quick actions*
+
+### NGO Dashboard
+![NGO Dashboard](/Foodie-Hands/public/screenshots/NGO%20Dashboard.png)
+*NGO dashboard with donation requests*
+
+### Admin Panel
+![Admin Dashboard](/Foodie-Hands/public/screenshots/AdminDashboard.png)
+*Admin dashboard with system overview*
+
+![NGO Analysis](/Foodie-Hands/public/screenshots/Analytics-NGO.png)
+*Analytical Report for NGOs*
+
+![Admin Can Track all Donations](/Foodie-Hands/public/screenshots/AdminDonationsTrackcing.png)
+*Admin can track all donations*
+
+### Global Features
+![Leaderboard](/Foodie-Hands/public/screenshots/Leaderboard.png)
+*Global leaderboard showing top donors and NGOs*
+
+![Notifications](/Foodie-Hands/public/screenshots/notification.png)
+*Real-time notification system*
+
 ## Tech Stack 🛠️
 
 - **Frontend**
