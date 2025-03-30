@@ -27,46 +27,44 @@ A web application that connects restaurants(Individuals also) with NGOs to reduc
 
 ## Screenshots 📸
 
-### Restaurant Dashboard
-<div float="left>
-    <div align="center">
-  <img src="./public/screenshots/Restaurant%20Dashboard.png" alt="Restaurant Dashboard" width="400"/>
-  <p><i>Restaurant dashboard showing stats and quick actions</i></p>
-</div>
-
-### NGO Dashboard
-<div align="center">
-  <img src="./public/screenshots/NGO%20Dashboard.png" alt="NGO Dashboard" width="400"/>
-  <p><i>NGO dashboard with donation requests</i></p>
-</div>
-
-### Admin Panel
-<div align="center">
-  <img src="./public/screenshots/AdminDashboard.png" alt="Admin Dashboard" width="400"/>
-  <p><i>Admin dashboard with system overview</i></p>
-</div>
-
-<div align="center">
-  <img src="./public/screenshots/Analytics-NGO.png" alt="NGO Analysis" width="400"/>
-  <p><i>Analytical Report for NGOs</i></p>
-</div>
-
-<div align="center">
-  <img src="./public/screenshots/AdminDonationsTrackcing.png" alt="Admin Donations Tracking" width="400"/>
-  <p><i>Admin can track all donations</i></p>
-</div>
-
-### Global Features
-<div align="center">
-  <img src="./public/screenshots/Leaderboard.png" alt="Leaderboard" width="400"/>
-  <p><i>Global leaderboard showing top donors and NGOs</i></p>
-</div>
-
-<div align="center">
-  <img src="./public/screenshots/notification.png" alt="Notifications" width="400"/>
-  <p><i>Real-time notification system</i></p>
-</div>
-</div>
+<table>
+<tr>
+<td>
+<img src="./public/screenshots/Restaurant%20Dashboard.png" alt="Restaurant Dashboard" width="400"/>
+<p><i>Restaurant Dashboard</i></p>
+</td>
+<td>
+<img src="./public/screenshots/NGO%20Dashboard.png" alt="NGO Dashboard" width="400"/>
+<p><i>NGO Dashboard</i></p>
+</td>
+</tr>
+<tr>
+<td>
+<img src="./public/screenshots/AdminDashboard.png" alt="Admin Dashboard" width="400"/>
+<p><i>Admin Dashboard</i></p>
+</td>
+<td>
+<img src="./public/screenshots/Analytics-NGO.png" alt="NGO Analysis" width="400"/>
+<p><i>NGO Analytics</i></p>
+</td>
+</tr>
+<tr>
+<td>
+<img src="./public/screenshots/AdminDonationsTrackcing.png" alt="Admin Donations Tracking" width="400"/>
+<p><i>Admin Donations Tracking</i></p>
+</td>
+<td>
+<img src="./public/screenshots/Leaderboard.png" alt="Leaderboard" width="400"/>
+<p><i>Global Leaderboard</i></p>
+</td>
+</tr>
+<tr>
+<td>
+<img src="./public/screenshots/notification.png" alt="Notifications" width="400"/>
+<p><i>Real-time Notifications</i></p>
+</td>
+</tr>
+</table>
 
 ## Tech Stack 🛠️
 
