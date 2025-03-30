@@ -56,11 +56,11 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className="hidden md:flex md:w-64 flex-col bg-white border-r border-gray-200 shadow-sm">
-      <div className="p-6">
-        <h2 className="text-xl font-bold flex items-center space-x-2">
-          <span className="bg-primary text-white p-1 rounded">w2t</span>
-          <span>waste2taste</span>
-        </h2>
+      <div className="flex items-center justify-center h-16 px-4 border-b">
+        <h1 className="text-xl font-semibold text-gray-800">
+          Foodie Hands
+          <span className="text-primary ml-1">.</span>
+        </h1>
       </div>
       
       <div className="flex-1 p-4">

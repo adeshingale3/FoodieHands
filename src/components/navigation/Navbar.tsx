@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Bell, LogOut, Menu, User } from 'lucide-react';
@@ -41,7 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             <span className="sr-only">Toggle sidebar</span>
           </Button>
           <h1 className="text-xl font-semibold text-gray-800">
-            waste2taste
+            Foodie Hands
             <span className="text-primary ml-1">.</span>
           </h1>
         </div>

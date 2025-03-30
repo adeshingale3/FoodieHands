@@ -21,7 +21,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 export const registerUser = async (email: string, password: string, userData: any) => {
@@ -86,8 +86,11 @@ export const logoutUser = async () => {
 export const getCurrentUser = () => {
   return new Promise<FirebaseUser | null>((resolve) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe();
-      resolve(user);
+      if (user) {
+        resolve(user);
+      } else {
+        resolve(null);
+      }
     });
   });
 };

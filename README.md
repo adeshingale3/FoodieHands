@@ -1,69 +1,151 @@
-# Welcome to your Lovable project
+# Foodie Hands 🍽️
 
-## Project info
+A web application that connects restaurants(Individuals also) with NGOs to reduce food waste and help those in need. Restaurants can donate surplus food, and NGOs can collect and distribute it to people who need it.
 
-**URL**: https://lovable.dev/projects/1a6a3879-c231-46a3-ac5c-5a7853dbd425
+## Features 🌟
 
-## How can I edit this code?
+- **Restaurant Features**
+  - Donate surplus food
+  - Track donation history
+  - View notifications
+  - Access leaderboard
+  - Manage profile settings
 
-There are several ways of editing your application.
+- **NGO Features**
+  - View available food donations
+  - Accept/reject donations
+  - Report disasters(So that we can donate food to disaster affected people)
+  - Access analytics (Premium)
+  - View leaderboard
+  - Manage profile settings
 
-**Use Lovable**
+- **Admin Features**
+  - Manage restaurants and NGOs
+  - Monitor donations
+  - View platform analytics
+  - Manage user roles and permissions
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1a6a3879-c231-46a3-ac5c-5a7853dbd425) and start prompting.
+## Tech Stack 🛠️
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**
+  - React with TypeScript
+  - Vite
+  - Tailwind CSS
+  - Shadcn UI Components
+  - React Router DOM
+  - Firebase Authentication
+  - Firebase Firestore
+  - Chart.js for analytics
 
-**Use your preferred IDE**
+## Prerequisites 📋
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (v16 or higher)
+- npm or yarn
+- Firebase account
+- Git
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Installation Steps 🚀
 
-Follow these steps:
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/faiznakherkar/Foodie-Hands
+   cd Foodie-Hands
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+3. **Set up Firebase**
+   - Create a new Firebase project
+   - Enable Authentication with Email/Password
+   - Create a Firestore database
+   - Get your Firebase configuration
 
-# Step 3: Install the necessary dependencies.
-npm i
+4. **Create environment variables**
+   Create a `.env` file in the root directory with the following variables:
+   ```env
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+5. **Start the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+6. **Build for production**
+   ```bash
+   npm run build
+   # or
+   yarn build
+   ```
+
+## Firebase Setup 🔧
+
+1. **Authentication**
+   - Enable Email/Password authentication
+   - Set up user roles (restaurant, ngo, admin)
+
+2. **Firestore Database**
+   - Create the following collections:
+     - users
+     - donations
+     - fooddetails
+     - notifications
+     - restaurantStats
+     - ngoStats
+     - disasters
+
+3. **Security Rules**
+   - Copy the security rules from `firestore.rules` to your Firebase project
+
+## Project Structure 📁
+
+```
+foodie-hands/
+├── src/
+│   ├── components/
+│   │   ├── navigation/
+│   │   └── ui/
+│   ├── contexts/
+│   ├── pages/
+│   │   ├── admin/
+│   │   ├── ngo/
+│   │   └── restaurant/
+│   ├── types/
+│   ├── lib/
+│   ├── firebase.ts
+│   └── App.tsx
+├── public/
+├── .env
+├── package.json
+└── README.md
 ```
 
-**Edit a file directly in GitHub**
+## Contributing 🤝
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-**Use GitHub Codespaces**
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Acknowledgments 🙏
 
-## What technologies are used for this project?
+- [Firebase](https://firebase.google.com/)
+- [React](https://reactjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Shadcn UI](https://ui.shadcn.com/)
 
-This project is built with .
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/1a6a3879-c231-46a3-ac5c-5a7853dbd425) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)

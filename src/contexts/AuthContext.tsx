@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '@/types';
 import { registerUser, loginUser, logoutUser, getCurrentUser, getUserData } from '@/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/firebase';
 
 interface AuthContextProps {
   user: User | null;
@@ -25,23 +27,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const initializeAuth = async () => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
-        const firebaseUser = await getCurrentUser();
         if (firebaseUser) {
           const userData = await getUserData(firebaseUser.uid);
           if (userData) {
             setUser(userData as User);
+          } else {
+            setUser(null);
           }
+        } else {
+          setUser(null);
         }
       } catch (error) {
-        console.error('Error initializing auth:', error);
+        console.error('Error handling auth state change:', error);
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
-    };
+    });
 
-    initializeAuth();
+    return () => unsubscribe();
   }, []);
 
   const login = async (email: string, password: string, role: UserRole) => {
