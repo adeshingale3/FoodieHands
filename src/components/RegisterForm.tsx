@@ -47,29 +47,45 @@ const RegisterForm: React.FC = () => {
         isPremium: role === 'ngo' ? isPremium : false,
       };
       
-      console.log('Registering user with data:', userData);
+      console.log('Starting registration process...');
+      console.log('User data:', { ...userData, password: '[REDACTED]' });
       
       await register(userData);
       
-      toast.success('Registration successful!');
+      console.log('Registration successful');
+      toast.success('Registration successful! Redirecting...');
       
       // Redirect based on role
-      switch (role) {
-        case 'restaurant':
-          navigate('/restaurant/dashboard');
+      if (role === 'restaurant') {
+        navigate('/restaurant/dashboard');
+      } else if (role === 'ngo') {
+        navigate('/ngo/dashboard');
+      }
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      });
+      
+      // Handle specific Firebase errors
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          toast.error('This email is already registered');
           break;
-        case 'ngo':
-          navigate('/ngo/dashboard');
+        case 'auth/invalid-email':
+          toast.error('Invalid email address');
           break;
-        case 'admin':
-          navigate('/admin/dashboard');
+        case 'auth/operation-not-allowed':
+          toast.error('Email/password accounts are not enabled. Please contact support.');
+          break;
+        case 'auth/weak-password':
+          toast.error('Password should be at least 6 characters');
           break;
         default:
-          navigate('/');
+          toast.error(error.message || 'Registration failed. Please try again.');
       }
-    } catch (error) {
-      console.error('Registration error:', error);
-      toast.error(error instanceof Error ? error.message : 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

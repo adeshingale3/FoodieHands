@@ -19,6 +19,11 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+console.log('Firebase Config:', {
+  ...firebaseConfig,
+  apiKey: firebaseConfig.apiKey ? '[PRESENT]' : '[MISSING]'
+});
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
@@ -26,9 +31,12 @@ export const db = getFirestore(app);
 
 export const registerUser = async (email: string, password: string, userData: any) => {
   try {
+    console.log('Starting Firebase registration...');
+    
     // Create user in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
+    console.log('Firebase Auth user created:', user.uid);
 
     // Store additional user data in Firestore
     await setDoc(doc(db, 'users', user.uid), {
@@ -36,9 +44,11 @@ export const registerUser = async (email: string, password: string, userData: an
       email: user.email,
       createdAt: new Date(),
     });
+    console.log('User data stored in Firestore');
 
     return user;
   } catch (error) {
+    console.error('Firebase registration error:', error);
     throw error;
   }
 };
